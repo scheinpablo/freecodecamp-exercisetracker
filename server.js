@@ -69,14 +69,14 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   let newExercise = {
     description: req.body.description,
     duration: req.body.duration,
-    date: (req.body.date) ? new Date(req.body.date) : new Date(),
+    date: (req.body.date) ? req.body.date: new Date().toISOString().substring(0,10),
   };
   User.findByIdAndUpdate(req.params._id, { $push: { log: newExercise }, $inc: { count: 1 } }, { new: true }, (err, data) => {
     if (err) return res.json({ error: 'invalid id' });
     res.json({
       username: data.username,
       description: newExercise.description,
-      date: newExercise.date.toDateString(), 
+      date: Date(newExercise.date).toDateString(), 
       duration: newExercise.duration,
       _id: data._id
     });
