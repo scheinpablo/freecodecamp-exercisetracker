@@ -31,27 +31,27 @@ app.get('/', (req, res) => {
 app.post('/api/users', (req, res) => {
   if (!req.params || !req.body.username || usernameExists(req.body.username)) return res.json({ error: 'invalid username' });
   let newUser = new User({ username: req.body.username, count: 0, log: [] });
-  newUser.save((err, data)=> {
+  newUser.save((err, data) => {
     if (err) return console.log(err);
-    res.json({username: newUser.username, _id: data._id});
+    res.json({ username: newUser.username, _id: data._id });
   });
 });
 
-app.get('/api/users', (req, res)=>{
-  User.find({}, (err, data)=>{
+app.get('/api/users', (req, res) => {
+  User.find({}, (err, data) => {
     if (err) return console.log(err);
-    res.send(data.map((user)=>{return {username: user.username, _id: user._id};}));
+    res.send(data.map((user) => { return { username: user.username, _id: user._id }; }));
   });
 });
 
-app.get('/api/users/:_id/logs', (req, res)=>{
+app.get('/api/users/:_id/logs', (req, res) => {
   if (!req.params || !req.params._id) return res.json({ error: 'invalid id' });
-  User.findById(req.params._id, (err, data)=>{
+  User.findById(req.params._id, (err, data) => {
     if (err || !data) return res.json({ error: 'invalid id' });
     var userLog = data.log;
-    if (req.query.from && req.query.to){
-      
-      userLog = userLog.filter((el)=> new Date(el.date) > new Date(req.query.from) && new Date(el.date) < new Date(req.query.to));
+    if (req.query.from && req.query.to) {
+
+      userLog = userLog.filter((el) => new Date(el.date) > new Date(req.query.from) && new Date(el.date) < new Date(req.query.to));
 
     }
     if (req.query.limit) userLog = userLog.slice(0, req.query.limit);
@@ -59,31 +59,32 @@ app.get('/api/users/:_id/logs', (req, res)=>{
     res.json({
       username: data.username,
       count: data.count,
-      log: userLog.map((el)=> {return {date: el.date, duration: el.duration, description: el.description};})
+      log: userLog.map((el) => { return { date: el.date, duration: el.duration, description: el.description }; })
     });
   });
 });
 
-app.post('/api/users/:_id/exercises', (req, res)=>{
+app.post('/api/users/:_id/exercises', (req, res) => {
   if (!req.params || !req.params._id) return res.json({ error: 'invalid id' });
   let newExercise = {
     description: req.body.description,
     duration: req.body.duration,
     date: (req.body.date) ? new Date(req.body.date) : new Date.now(),
   };
-  User.findByIdAndUpdate(req.params._id, { $push: { log: newExercise },  $inc: { count: 1 } } ,{new: true}, (err, data)=>{
+  User.findByIdAndUpdate(req.params._id, { $push: { log: newExercise }, $inc: { count: 1 } }, { new: true }, (err, data) => {
     if (err) return res.json({ error: 'invalid id' });
     res.json({
       username: data.username,
       count: data.count,
-      log: data.log.map((el)=> {return {date: el.date, duration: el.duration, description: el.description};})
+      description: newExercise.description,
+      date: newExercise.date, duration: newExercise.duration
     });
   });
 });
 
-app.get('/api/delete', (req, res)=>{
-  User.remove({}, (err, data)=>{
-    res.json({rem: 'a'});
+app.get('/api/delete', (req, res) => {
+  User.remove({}, (err, data) => {
+    res.json({ rem: 'a' });
   });
 })
 
