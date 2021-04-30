@@ -77,7 +77,9 @@ app.post('/api/users/:_id/exercises', (req, res) => {
       username: data.username,
       count: data.count,
       description: newExercise.description,
-      date: newExercise.date, duration: newExercise.duration
+      date: newExercise.date, 
+      duration: newExercise.duration,
+      _id: data._id
     });
   });
 });
