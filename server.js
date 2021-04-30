@@ -75,7 +75,6 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     if (err) return res.json({ error: 'invalid id' });
     res.json({
       username: data.username,
-      count: data.count,
       description: newExercise.description,
       date: newExercise.date, 
       duration: newExercise.duration,
